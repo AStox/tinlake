@@ -179,12 +179,16 @@ contract ProportionalOperator is Math, DSNote, Auth  {
         return currencyAmount;
     }
 
-    /// returns the tokenPrice denominated in RAD (10^27)
-    function calcTokenPrice(address usr) public view returns (uint) {
+     function calcTokenPrice(address usr) public view returns (uint) {
         if (totalPrincipalReturned == 0)  {
             return ONE;
         }
-       return rdiv(safeSub(totalCurrencyReturned, currencyRedeemed[usr]),
-           safeSub(totalPrincipalReturned, principalRedeemed[usr]));
+
+        uint principalLeft = safeSub(totalPrincipalReturned, principalRedeemed[usr]);
+        if (principalLeft == 0) {
+            return 0;
+        }
+
+       return rdiv(safeSub(totalCurrencyReturned, currencyRedeemed[usr]), principalLeft);
     }
 }
